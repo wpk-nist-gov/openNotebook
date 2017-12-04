@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# AUTHOR : William Krekelberg
+# EMAIL : wpk@nist.gov
+
+
+# make sure stuff is see able
+# export PATH=$PATH:/usr/local/bin
+
+# try to guess realpath and open commands
+system=$(uname)
+if [ "$system" == "Linux" ] ; then
+    REALPATH=realpath
+    OPEN=xdg-open
+elif [ "$system" == "Darwin" ] ; then
+    REALPATH=grealpath
+    OPEN=open
+fi
+
+
+# defaults
+HOST='localhost'
+PORT='8888'
+
+# place where execulte jupyter notebook
+TOP=$HOME/Documents
+
+DIRTOP='tree'
+FILETOP='notebooks'
+
+
+usage="usage:
+-H host
+-p port
+-t top directory (if=='get', PWD)
+-d directory prefix ('tree')
+-f file prefix ('notebooks')
+"
+
+if [ $# -lt 1 ]; then
+    echo $usage
+    exit 1
+fi
+
+while getopts :H:p:t:d:f:h arg; do
+    case $arg in
+
+	H) HOST=$OPTARG ;;
+	p) PORT=$OPTARG ;;
+	t) TOP=$OPTARG ;;
+	d) DIRTOP=$OPTARG ;;
+	f) FILETOP=$OPTARG ;;
+
+	:)  echo "$0: must supply an argument to -$OPTARG."
+	  exit 1 ;;
+	\?) echo "Invalid option -$OPTARG ignored" ;;
+
+	h)  echo $usage
+	    exit 1 ;;
+
+    esac
+done
+
+
+
+
+
+shift $(($OPTIND - 1))
+
+if [ $TOP == "get" ]; then
+    TOP=$PWD
+fi
+
+TOP=$($REALPATH $TOP)
+
+
+# construct urls
+prefix_dir="http://${HOST}:${PORT}/${DIRTOP}"
+prefix_file="http://${HOST}:${PORT}/${FILETOP}"
+
+
+
+for path in $@; do
+    RelPath=$($REALPATH --relative-to=$TOP $path)
+    if [ -d $RelPath ] ; then
+	      s="${prefix_dir}/$RelPath"
+    else
+	      s="${prefix_file}/$RelPath"
+    fi
+
+    $OPEN $s
+done
+

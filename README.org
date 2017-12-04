@@ -1,0 +1,30 @@
+* openNotebook
+Bash script to work with a single jupyter notebook server
+
+* Requirements
+The script makes use of two external programs to do the following
+  - Open default browser
+    - open (osx) 
+    - xdg-open (linux)
+  - Get path relative to notebook server
+    - grealpath (osx via homebrew install coreutils)
+    - realpath (linux)
+
+The script attempts to determine the system being used.  
+
+
+* User changes to script
+
+  - ~TOP~ default directory of notebook server (Default ~$HOME/Documents~)
+  - ~HOST~ prefix for rendered urls (Default ~localhost~)
+  - ~PORT~ port number (Default ~8888~)
+  - place ~openNotebook~ script in path
+
+* Usage
+#+BEGIN_SRC 
+ # open notebook file view of current directory
+ > openNotebook . 
+ # open notebook Note that Untitled must exist
+ > openNotebook Untitled.ipynb
+
+#+END_SRC
