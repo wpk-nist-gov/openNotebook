@@ -13,18 +13,20 @@ The script makes use of two external programs to do the following
 The script attempts to determine the system being used.  
 
 
-* User changes to script
+* Script variables:
 
   - ~TOP~ default directory of notebook server (Default ~$HOME/Documents~)
   - ~HOST~ prefix for rendered urls (Default ~localhost~)
   - ~PORT~ port number (Default ~8888~)
-  - place ~openNotebook~ script in path
 
 * Usage
+  place ~openNotebook~ script in path
+
 #+BEGIN_SRC 
  # open notebook file view of current directory
- > openNotebook . 
+ $ openNotebook . 
+
  # open notebook Note that Untitled must exist
- > openNotebook Untitled.ipynb
+ $ openNotebook Untitled.ipynb
 
 #+END_SRC
