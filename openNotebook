@@ -33,7 +33,12 @@ usage="usage:
 -p port
 -t top directory (if=='get', PWD)
 -d directory prefix ('tree')
+-l 'lab'
+-n 'notebook'
 -f file prefix ('notebooks')
+-w workspace
+-r reset
+-q quit. (i.e., no open)
 "
 
 if [ $# -lt 1 ]; then
@@ -41,7 +46,10 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-while getopts :H:p:t:d:f:h arg; do
+SUFFIX=''
+DOPEN=$OPEN
+
+while getopts :H:p:t:d:f:lnw:rc:qh arg; do
     case $arg in
 
 	H) HOST=$OPTARG ;;
@@ -49,6 +57,12 @@ while getopts :H:p:t:d:f:h arg; do
 	t) TOP=$OPTARG ;;
 	d) DIRTOP=$OPTARG ;;
 	f) FILETOP=$OPTARG ;;
+  w) FILETOP='lab/workspaces/'$OPTARG'/tree' ;;
+  l) FILETOP='lab/tree' ;;
+  n) FILETOP='notebooks' ;;
+  r) SUFFIX='?reset' ;;
+  c) SUFFIX='?clone='$OPTARG ;;
+  q) DOPEN='echo' ;;
 
 	:)  echo "$0: must supply an argument to -$OPTARG."
 	  exit 1 ;;
@@ -59,6 +73,7 @@ while getopts :H:p:t:d:f:h arg; do
 
     esac
 done
+
 
 
 
@@ -78,15 +93,19 @@ prefix_dir="http://${HOST}:${PORT}/${DIRTOP}"
 prefix_file="http://${HOST}:${PORT}/${FILETOP}"
 
 
+if [ $# -eq 0 ] ; then
+    paths=$PWD
+else
+    paths=$@
+fi
 
-for path in $@; do
+for path in $paths; do
     RelPath=$($REALPATH --relative-to=$TOP $path)
     if [ -d $RelPath ] ; then
-	      s="${prefix_dir}/$RelPath"
+	      s="${prefix_dir}/$RelPath$SUFFIX"
     else
-	      s="${prefix_file}/$RelPath"
+	      s="${prefix_file}/$RelPath$SUFFIX"
     fi
-
-    $OPEN $s
+    $DOPEN $s
 done
 
